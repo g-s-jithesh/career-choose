@@ -1,59 +1,100 @@
 import customtkinter as ctk
-from tkinter import messagebox
+from theme import THEME
 
 class WelcomeScreen(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent)
+        super().__init__(parent, fg_color=THEME["bg_color"])
         self.controller = controller
 
-        # Title
-        title_label = ctk.CTkLabel(self, text="Welcome to Career Chooser", font=ctk.CTkFont(size=30, weight="bold"))
-        title_label.pack(pady=(60, 20))
-
-        subtitle_label = ctk.CTkLabel(self, text="Let's find the perfect career path for you!", font=ctk.CTkFont(size=18))
-        subtitle_label.pack(pady=(0, 40))
-
-        # Form Frame
-        form_frame = ctk.CTkFrame(self, fg_color="transparent")
-        form_frame.pack(pady=20, padx=60, fill="both", expand=True)
-
-        # Name Input
-        name_label = ctk.CTkLabel(form_frame, text="What is your name?", font=ctk.CTkFont(size=16))
-        name_label.pack(pady=(10, 5))
-        self.name_entry = ctk.CTkEntry(form_frame, width=300, placeholder_text="Enter your name")
-        self.name_entry.pack(pady=(0, 20))
-
-        # Class Input
-        class_label = ctk.CTkLabel(form_frame, text="Which class are you in?", font=ctk.CTkFont(size=16))
-        class_label.pack(pady=(10, 5))
-        
-        self.class_var = ctk.StringVar(value="9th")
-        self.class_dropdown = ctk.CTkOptionMenu(
-            form_frame, 
-            values=["9th", "10th", "11th", "12th"],
-            variable=self.class_var,
-            width=300
+        # Center Hero Card
+        hero_card = ctk.CTkFrame(
+            self,
+            fg_color=THEME["card_bg"],
+            corner_radius=18,
+            border_width=2,
+            border_color=THEME["card_border"]
         )
-        self.class_dropdown.pack(pady=(0, 40))
+        hero_card.pack(pady=50, padx=60, fill="both", expand=True)
+
+        # Decorative Top Icon / Header
+        icon_label = ctk.CTkLabel(
+            hero_card,
+            text="🎓",
+            font=ctk.CTkFont(size=56)
+        )
+        icon_label.pack(pady=(45, 10))
+
+        # Main Title
+        title_label = ctk.CTkLabel(
+            hero_card,
+            text="Welcome to Career Chooser",
+            font=ctk.CTkFont(size=30, weight="bold"),
+            text_color=THEME["text_title"]
+        )
+        title_label.pack(pady=(0, 12))
+
+        # Subtitle / Welcome Message
+        subtitle_label = ctk.CTkLabel(
+            hero_card,
+            text="Find the perfect career path tailored to your interests and passions.",
+            font=ctk.CTkFont(size=17),
+            text_color=THEME["text_body"]
+        )
+        subtitle_label.pack(pady=(0, 25))
+
+        # Highlights Box
+        highlights_frame = ctk.CTkFrame(
+            hero_card,
+            fg_color=THEME["surface_color"],
+            corner_radius=12,
+            border_width=1,
+            border_color=THEME["card_border"]
+        )
+        highlights_frame.pack(pady=(0, 35), padx=50, fill="x")
+
+        highlights = [
+            ("✨ Quick & Simple", "Answer just 2 questions about your hobbies and career interests."),
+            ("🎯 Tailored Guidance", "Curated stream-specific pathways for senior students."),
+            ("🚀 Explore Opportunities", "Discover in-demand careers across Science, Commerce & Arts.")
+        ]
+
+        for title, desc in highlights:
+            item_frame = ctk.CTkFrame(highlights_frame, fg_color="transparent")
+            item_frame.pack(fill="x", padx=20, pady=8)
+
+            t_lbl = ctk.CTkLabel(
+                item_frame,
+                text=title,
+                font=ctk.CTkFont(size=14, weight="bold"),
+                text_color=THEME["text_title"],
+                anchor="w"
+            )
+            t_lbl.pack(anchor="w")
+
+            d_lbl = ctk.CTkLabel(
+                item_frame,
+                text=desc,
+                font=ctk.CTkFont(size=13),
+                text_color=THEME["text_muted"],
+                anchor="w"
+            )
+            d_lbl.pack(anchor="w")
 
         # Next Button
-        next_button = ctk.CTkButton(self, text="Start Journey", font=ctk.CTkFont(size=16, weight="bold"), height=40, width=200, command=self.on_next)
-        next_button.pack(pady=20)
+        next_button = ctk.CTkButton(
+            hero_card,
+            text="Next →",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            height=44,
+            width=220,
+            corner_radius=10,
+            fg_color=THEME["primary"],
+            hover_color=THEME["primary_hover"],
+            text_color=THEME["text_light"],
+            command=self.on_next
+        )
+        next_button.pack(pady=(0, 40))
 
     def on_next(self):
-        name = self.name_entry.get().strip()
-        class_level = self.class_var.get()
-
-        if not name:
-            messagebox.showerror("Error", "Please enter your name to continue.")
-            return
-
-        # Save to controller
-        self.controller.user_data["name"] = name
-        self.controller.user_data["class_level"] = class_level
-
-        # Logic based on class level
-        if class_level in ["11th", "12th"]:
-            self.controller.show_frame("StreamSelectionScreen")
-        else:
-            self.controller.show_frame("QuestionnaireScreen")
+        # Move directly to Class Selection
+        self.controller.show_frame("ClassSelectionScreen")
